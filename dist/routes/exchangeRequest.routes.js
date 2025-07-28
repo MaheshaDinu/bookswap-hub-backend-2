@@ -1,0 +1,13 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const exchangeRequest_controller_1 = require("../controller/exchangeRequest.controller");
+const exchangeRequestRouter = (0, express_1.Router)();
+exchangeRequestRouter.post("/create-request", exchangeRequest_controller_1.createExchangeRequest);
+exchangeRequestRouter.get("/get-all-requests", exchangeRequest_controller_1.getAllExchangeRequests);
+exchangeRequestRouter.get("/get-request/:id", exchangeRequest_controller_1.getExchangeRequestById);
+exchangeRequestRouter.get("/sent-by/:userId", exchangeRequest_controller_1.getSentExchangeRequests);
+exchangeRequestRouter.get("/received-by/:userId", exchangeRequest_controller_1.getReceivedExchangeRequests);
+exchangeRequestRouter.put("/update-status/:id/:actingUserId", exchangeRequest_controller_1.updateExchangeRequestStatus);
+exchangeRequestRouter.delete("/delete-request/:id/:actingUserId", exchangeRequest_controller_1.deleteExchangeRequest);
+exports.default = exchangeRequestRouter;
