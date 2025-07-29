@@ -1,50 +1,59 @@
-import {Book} from "../dto/Book.dto";
-import {booksList} from "../db/db";
+import {BookDto} from "../dto/Book.dto";
+import Book from "../models/book.model";
 
-export const createBook = (newBook: Book) => {
+export const createBook = async (newBook: BookDto) => {
+    newBook.id = await generateBookId();
     newBook.createdAt = new Date();
     newBook.updatedAt = new Date();
     newBook.isAvailable = true;
-    booksList.push(newBook)
-    return newBook
+    return Book.create(newBook);
 }
 
-export const getAllBooks = () => {
-    return booksList;
+export const getAllBooks = async ():Promise<BookDto[]> => {
+    return Book.find();
 }
 
-export const getBookById = (bookId: number) => {
-    return booksList.find(book => book.id == bookId);
+export const getBookById = async (bookId: number):Promise<BookDto | null> => {
+    return Book.findOne({id: bookId});
 
 }
 
-export const updateBook = (bookId: number, updatedBook: Book) => {
-    const bookIndex = booksList.findIndex(book => book.id == bookId);
-    if (bookIndex == -1) {
+export const updateBook = async (bookId: number, updatedBook: BookDto):Promise<BookDto | null> => {
+    const book = await Book.findOneAndUpdate({id:bookId},updatedBook,{new: true});
+    if (!book) {
         return null;
     }
-    updatedBook.updatedAt = new Date();
-    booksList[bookIndex] = updatedBook;
-    return updatedBook
+    return book;
 }
 
-export const deleteBook = (bookId: number) => {
-    const bookIndex = booksList.findIndex(book => book.id == bookId);
-    if (bookIndex == -1) {
+export const deleteBook = async (bookId: number):Promise<BookDto | null> => {
+    const deletedBook = await Book.findOneAndDelete({id:bookId});
+    if (!deletedBook) {
         return null;
     }
-    const deletedBook = booksList[bookIndex];
-    booksList.splice(bookIndex, 1);
-    return deletedBook
+    return deletedBook;
 }
 
-export const getBooksByUserId = (userId: number) => {
-    return booksList.filter(book => book.ownerId == userId);
+export const getBooksByUserId = async (userId: number):Promise<BookDto[] | null> => {
+    const books = await Book.find({ownerId: userId});
+    if (!books) {
+        return null;
+    }
+    return books;
 }
 
-export const validateBook = (book: Book) => {
+export const validateBook = (book: BookDto) => {
     if (!book.title || !book.author || !book.category || !book.description || !book.condition) {
         return "All fields are required.";
     }
     return null;
+}
+
+export const generateBookId = async () => {
+    const books = await getAllBooks();
+    if (books.length == 0) {
+        return 1;
+    }
+    const lastBook = books[books.length - 1];
+    return lastBook.id + 1;
 }

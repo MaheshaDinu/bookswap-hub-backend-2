@@ -1,15 +1,15 @@
 import { Request, Response } from "express";
 import * as bookService from "../service/book.service";
 
-export const createBook = (req:Request, res:Response) => {
+export const createBook = async (req:Request, res:Response) => {
     try {
         const newBook = req.body;
-        const validationError = bookService.validateBook(newBook)
+        const validationError =  bookService.validateBook(newBook)
         if (validationError) {
             res.status(400).json({ message: validationError });
             return ;
         }
-        const createdBook = bookService.createBook(newBook);
+        const createdBook = await bookService.createBook(newBook);
         res.status(201).json(createdBook);
     }catch (error) {
         if (error instanceof Error) {
@@ -22,9 +22,9 @@ export const createBook = (req:Request, res:Response) => {
     }
 }
 
-export const getAllBooks = (req:Request, res:Response) => {
+export const getAllBooks = async (req:Request, res:Response) => {
     try {
-        const books = bookService.getAllBooks();
+        const books = await bookService.getAllBooks();
         res.status(200).json(books);
     } catch (error) {
         if (error instanceof Error) {
@@ -36,10 +36,10 @@ export const getAllBooks = (req:Request, res:Response) => {
     }
 }
 
-export const getBookById = (req:Request, res:Response) => {
+export const getBookById = async (req:Request, res:Response) => {
     try {
         const bookId = parseInt(req.params.id);
-        const book = bookService.getBookById(bookId);
+        const book = await bookService.getBookById(bookId);
         if (!book) {
             res.status(404).json({ message: "Book not found" });
             return;
@@ -55,11 +55,11 @@ export const getBookById = (req:Request, res:Response) => {
     }
 }
 
-export const updateBook = (req:Request, res:Response) => {
+export const updateBook = async (req:Request, res:Response) => {
     try {
         const bookId = parseInt(req.params.id);
         const updatedBook = req.body;
-        const validationError = bookService.validateBook(updatedBook)
+        const validationError = await bookService.validateBook(updatedBook)
         if (validationError) {
             res.status(400).json({ message: validationError });
             return ;
@@ -80,10 +80,10 @@ export const updateBook = (req:Request, res:Response) => {
     }
 }
 
-export const deleteBook = (req:Request, res:Response) => {
+export const deleteBook = async (req:Request, res:Response) => {
     try {
         const bookId = parseInt(req.params.id);
-        const deleted = bookService.deleteBook(bookId);
+        const deleted = await bookService.deleteBook(bookId);
         if (!deleted) {
             res.status(404).json({ message: "Book not found" });
             return;
@@ -99,10 +99,10 @@ export const deleteBook = (req:Request, res:Response) => {
     }
 }
 
-export const getBooksByUserId = (req:Request, res:Response) => {
+export const getBooksByUserId = async (req:Request, res:Response) => {
     try {
         const userId = parseInt(req.params.id)
-        const books = bookService.getBooksByUserId(userId);
+        const books = await bookService.getBooksByUserId(userId);
         if (!books) {
             res.status(404).json({ message: "User do not have books" });
             return;

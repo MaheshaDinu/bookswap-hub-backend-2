@@ -1,5 +1,5 @@
 import conditions from "../enums/conditions.enum";
-export interface Book{
+export interface BookDto{
     id: number;
     title: string;
     author: string;
