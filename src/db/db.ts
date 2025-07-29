@@ -1,11 +1,11 @@
-import {Book} from "../dto/Book.dto";
-import {User} from "../models/user.model";
+import {BookDto} from "../dto/Book.dto";
+import {UserDto} from "../dto/User.dto";
 import {ExchangeRequest} from "../models/exchangeRequest.model";
 
-export const booksList: Book[] = [];
+export const booksList: BookDto[] = [];
 
 
-export const userList: User[] = [];
+export const userList: UserDto[] = [];
 let nextUserId = 1;
 
 export const getNextUserId = () => nextUserId++;

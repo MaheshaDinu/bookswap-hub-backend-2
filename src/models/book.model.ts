@@ -1,8 +1,7 @@
 import mongoose from "mongoose";
-import dotenv from "dotenv";
 import conditionsEnum from "../enums/conditions.enum";
 
-dotenv.config();
+
 
 const BookModel = new mongoose.Schema(
     {
