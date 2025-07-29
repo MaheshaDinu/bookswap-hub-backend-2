@@ -1,5 +1,6 @@
 import User from "../models/user.model";
 import {UserDto} from "../dto/User.dto";
+import bcrypt from "bcryptjs";
 
 
 export const createUser = async (newUser: Omit<UserDto, "id" | "createdAt" | "updatedAt">):Promise<any> =>
@@ -10,7 +11,7 @@ export const createUser = async (newUser: Omit<UserDto, "id" | "createdAt" | "up
             id: await getNextUserId(),
             name: newUser.name,
             email: newUser.email,
-            password: newUser.password,
+            password: bcrypt.hashSync(newUser.password,10),
             location: newUser.location,
             contact: newUser.contact,
             isAdmin: newUser.isAdmin,
