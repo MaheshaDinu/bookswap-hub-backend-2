@@ -6,7 +6,8 @@ export const createBook = async (newBook: BookDto) => {
     newBook.createdAt = new Date();
     newBook.updatedAt = new Date();
     newBook.isAvailable = true;
-    return Book.create(newBook);
+    const book:BookDto = await Book.create(newBook);
+    return book;
 }
 
 export const getAllBooks = async ():Promise<BookDto[]> => {

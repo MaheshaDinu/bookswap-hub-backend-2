@@ -1,12 +1,13 @@
-import {User} from "../models/user.model";
-import {getNextUserId, userList} from "../db/db";
+import User from "../models/user.model";
+import {UserDto} from "../dto/User.dto";
 
-export const createUser = (newUser: Omit<User, "id" | "createdAt" | "updatedAt">) =>
+
+export const createUser = async (newUser: Omit<UserDto, "id" | "createdAt" | "updatedAt">):Promise<Omit<UserDto, "password">[]> =>
 {
 
 
-        const user: User = {
-            id: getNextUserId(),
+        const userDto = {
+            id: await getNextUserId(),
             name: newUser.name,
             email: newUser.email,
             password: newUser.password,
@@ -15,64 +16,49 @@ export const createUser = (newUser: Omit<User, "id" | "createdAt" | "updatedAt">
             isAdmin: newUser.isAdmin,
             createdAt: new Date(),
             updatedAt: new Date(),
-        }
+        };
 
-        userList.push(user)
-        const { password, ...userWithoutPassword } = user; // Exclude password from the returned object for security
-        return userWithoutPassword as User;
 
-}
-
-export const getAllUsers = ():Omit<User, "password">[] => {
-
-        return userList.map((({password, ...user})=> user));
-
+          return  User.create(userDto);
 
 }
 
-export const getUserById = (userId: number): Omit<User, 'password'> | null => {
-    const user = userList.find(user => user.id === userId);
+export const getAllUsers = async ():Promise<Omit<UserDto, "password">[]> => {
+    return User.find()
+}
+
+export const getUserById = async (userId: number):Promise<Omit<User, 'password'>  | null> => {
+    const user = User.findOne({id: userId});
     if (!user) {
         return null;
     }
-    const { password, ...userWithoutPassword } = user;
-    return userWithoutPassword as User;
+    const {password, ...userWithoutPassword} = user;
+    return userWithoutPassword as Omit<User, "password">
 };
 
 
-export const updateUser = (userId: number, updatedUserData: Partial<User>):Omit<User, "password"> | null => {
-
-        const userIndex = userList.findIndex(user => user.id == userId);
-        if (userIndex === -1) {
-            return null;
-        }
-        const existingUser = userList[userIndex];
-        const updatedUser: User = {
-            ...existingUser,
-            ...updatedUserData,
-            updatedAt: new Date(),
-        };
-        userList[userIndex] = updatedUser;
-        const {password, ...userWithoutPassword} = updatedUser;
-        return userWithoutPassword as Omit<User, "password">;
+export const updateUser = async (userId: number, updatedUserData: Partial<User>):Promise<Omit<User, "password"> | null> => {
+    const updatedUser = User.findOneAndUpdate({id: userId}, updatedUserData, {new: true});
+    if (!updatedUser) {
+        return null;
+    }
+    return updatedUser as Omit<User, "password">;
 
 
 }
 
-export const deleteUser = (userId: number) :Omit<User, "password"> | null => {
+export const deleteUser = async (userId: number) :Promise<Omit<User, "password"> | null> => {
 
-        const userIndex = userList.findIndex(user => user.id === userId);
-        if (userIndex === -1) {
-            return null;
-        }
-        const [deletedUser] = userList.splice(userIndex, 1);
-        const { password, ...userWithoutPassword } = deletedUser;
-        return userWithoutPassword as User;
+    const deletedUser = User.findOneAndDelete({id: userId});
+    if (!deletedUser) {
+        return null;
+    }
+    return deletedUser as Omit<User, "password">
 
 }
 
 
-export const validateUser = (user: Partial<User>, isNewUser: boolean = false, currentUserId?: number): string | null => {
+export const validateUser = async (user: Partial<UserDto>, isNewUser: boolean = false, currentUserId?: number):Promise<string | null>  => {
     if (isNewUser) {
         if (!user.name || typeof user.name !== 'string' || user.name.trim().length === 0) {
             return "Name is required and must be a non-empty string.";
@@ -84,14 +70,40 @@ export const validateUser = (user: Partial<User>, isNewUser: boolean = false, cu
             return "Password is required and must be at least 6 characters long.";
         }
         // Check if email already exists
-        if (userList.some(u => u.email === user.email)) {
-            return "Email already exists.";
+        try {
+            const existingUser = await User.findOne({email: user.email});
+            if (existingUser) {
+                return "Email already exists.";
+            }
+        } catch (error) {
+            console.error("Database error during email existence check:", error);
+            return "Server error: Could not check email existence.";
         }
+
+
     } else { // For updates
-        if (user.email && userList.some(u => u.email === user.email && u.id !== currentUserId)) {
-            return "Email already exists for another user.";
+        if (currentUserId === undefined) {
+            return "User ID is required for updates.";
+        }
+        try {
+            const conflictUser = await User.findOne({email: user.email, id: {$ne: currentUserId}}).select("id");
+            if (conflictUser) {
+                return "Email already exists for another user.";
+            }
+        }catch (dbError) {
+            console.error("Database error during email conflict check for update:", dbError);
+            return "Server error: Could not check email conflict.";
         }
     }
     return null;
+};
+
+export const getNextUserId = async () => {
+    const users:Omit<UserDto,"password">[] = await getAllUsers();
+    if (users.length === 0) {
+        return 1;
+    }
+    const lastUser = users[users.length - 1];
+    return lastUser.id + 1;
 };
 
