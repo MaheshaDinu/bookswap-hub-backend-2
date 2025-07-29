@@ -2,7 +2,7 @@ import User from "../models/user.model";
 import {UserDto} from "../dto/User.dto";
 
 
-export const createUser = async (newUser: Omit<UserDto, "id" | "createdAt" | "updatedAt">):Promise<Omit<UserDto, "password">[]> =>
+export const createUser = async (newUser: Omit<UserDto, "id" | "createdAt" | "updatedAt">):Promise<any> =>
 {
 
 
@@ -19,7 +19,7 @@ export const createUser = async (newUser: Omit<UserDto, "id" | "createdAt" | "up
         };
 
 
-          return  User.create(userDto);
+          return await User.create(userDto) ;
 
 }
 
@@ -27,33 +27,32 @@ export const getAllUsers = async ():Promise<Omit<UserDto, "password">[]> => {
     return User.find()
 }
 
-export const getUserById = async (userId: number):Promise<Omit<User, 'password'>  | null> => {
+export const getUserById = async (userId: number):Promise<any> => {
     const user = User.findOne({id: userId});
     if (!user) {
         return null;
     }
-    const {password, ...userWithoutPassword} = user;
-    return userWithoutPassword as Omit<User, "password">
+    return user;
 };
 
 
-export const updateUser = async (userId: number, updatedUserData: Partial<User>):Promise<Omit<User, "password"> | null> => {
+export const updateUser = async (userId: number, updatedUserData: Partial<UserDto>):Promise<any> => {
     const updatedUser = User.findOneAndUpdate({id: userId}, updatedUserData, {new: true});
     if (!updatedUser) {
         return null;
     }
-    return updatedUser as Omit<User, "password">;
+    return updatedUser;
 
 
 }
 
-export const deleteUser = async (userId: number) :Promise<Omit<User, "password"> | null> => {
+export const deleteUser = async (userId: number) :Promise<any> => {
 
     const deletedUser = User.findOneAndDelete({id: userId});
     if (!deletedUser) {
         return null;
     }
-    return deletedUser as Omit<User, "password">
+    return deletedUser;
 
 }
 

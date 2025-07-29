@@ -1,6 +1,6 @@
 import {BookDto} from "../dto/Book.dto";
 import {UserDto} from "../dto/User.dto";
-import {ExchangeRequest} from "../models/exchangeRequest.model";
+import {ExchangeRequestDto} from "../dto/ExchangeRequest.dto";
 
 export const booksList: BookDto[] = [];
 
@@ -10,7 +10,7 @@ let nextUserId = 1;
 
 export const getNextUserId = () => nextUserId++;
 
-export const exchangeRequestsList: ExchangeRequest[] = []; // In-memory array
+export const exchangeRequestsList: ExchangeRequestDto[] = []; // In-memory array
 let nextExchangeRequestId = 1; // Simple counter for unique IDs
 
 export const generateExchangeRequestId = (): number => {

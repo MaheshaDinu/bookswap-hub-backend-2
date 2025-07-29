@@ -24,21 +24,21 @@ export const getExchangeRequestById = async (requestId: number):Promise<Exchange
     return ExchangeRequest.findOne({id: requestId});
 }
 
-export const deleteExchangeRequest = async (requestId: number):Promise<ExchangeRequestDto | null> => {
+export const deleteExchangeRequest = async (requestId: number):Promise<any> => {
     const deletedRequest = await ExchangeRequest.findOneAndDelete({id: requestId});
     if (!deletedRequest) {
         return null;
     }
     return deletedRequest;
 }
-export const updateExchangeRequest = async (requestId: number, updatedRequestData: Partial<ExchangeRequestDto>):Promise<ExchangeRequestDto | null> => {
+export const updateExchangeRequest = async (requestId: number, updatedRequestData: Partial<ExchangeRequestDto>):Promise<any> => {
     const updatedRequest = await ExchangeRequest.findOneAndUpdate({id: requestId}, updatedRequestData, {new: true});
     if (!updatedRequest) {
         return null;
     }
     return updatedRequest;
 }
-export const getSentExchangeRequests = async (requesterId: number): Promise<ExchangeRequestDto[]> => {
+export const getSentExchangeRequests = async (requesterId: number): Promise<any> => {
     try {
         return await ExchangeRequest.find({requester_id: requesterId}).sort({createdAt: -1});
     } catch (error) {
@@ -47,7 +47,7 @@ export const getSentExchangeRequests = async (requesterId: number): Promise<Exch
     }
 };
 
-export const getReceivedExchangeRequests = async (receiverId: number): Promise<ExchangeRequestDto[]> => {
+export const getReceivedExchangeRequests = async (receiverId: number): Promise<any> => {
     try {
         return await ExchangeRequest.find({receiver_id: receiverId}).sort({createdAt: -1});
     } catch (error) {
@@ -59,9 +59,9 @@ export const updateExchangeRequestStatus = async (
     requestId: number,
     newStatus: RequestStatus,
     currentUserId: number
-): Promise<ExchangeRequestDto | string | null> => {
+): Promise<any> => {
     try {
-        const request:ExchangeRequestDto = await ExchangeRequest.findOne({ id: requestId });
+        const request = await ExchangeRequest.findOne({ id: requestId });
 
         if (!request) {
             return null; // Request not found

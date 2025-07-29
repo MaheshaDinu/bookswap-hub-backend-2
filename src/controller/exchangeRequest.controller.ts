@@ -17,7 +17,7 @@ export const createExchangeRequest = async (req: Request, res: Response) => {
             return res.status(400).json({ message: validationError });
         }
 
-        const result:ExchangeRequestDto = await exchangeRequestService.createExchangeRequest(newRequestData);
+        const result = await exchangeRequestService.createExchangeRequest(newRequestData);
 
         if (!result) { // Means it returned an error message
             return res.status(400).json({ message: "Exchange request could not be created." });

@@ -1,5 +1,5 @@
 import dotenv from 'dotenv';
-import {User} from "../models/user.model";
+import {UserDto} from "../dto/User.dto";
 import {userList} from "../db/db";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
@@ -12,7 +12,7 @@ const REFRESH_SECRET = process.env.REFRESH_SECRET as string;
 const refreshTokens = new Set<string>();
 
 export const authenticateUser = (email: string, password: string) => {
-    const existingUser: User | undefined = userList.find(user => user.email === email);
+    const existingUser: UserDto | undefined = userList.find(user => user.email === email);
 
     let isValidPassword = undefined != existingUser
         && bcrypt.compareSync(password, existingUser.password);
