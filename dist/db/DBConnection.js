@@ -17,10 +17,11 @@ const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
 const MONGODB_URL = process.env.MONGODB_URL;
 const DBConnection = () => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
     try {
         console.log(MONGODB_URL);
         const connection = yield mongoose_1.default.connect(MONGODB_URL);
-        return `Successfully connected to ${connection.connection.host}`;
+        return `Successfully connected to ${(_a = connection.connection) === null || _a === void 0 ? void 0 : _a.host}`;
     }
     catch (error) {
         return "MongoDB connection Error: " + error;
