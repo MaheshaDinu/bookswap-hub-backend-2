@@ -16,6 +16,9 @@ const ExchangeRequestModel = new mongoose.Schema({
         required: true,
         type: Number,
     },
+    "requested_book_id": {
+        type: Number,
+    },
     "book_id": {
         required: true,
         type: Number,
@@ -23,16 +26,20 @@ const ExchangeRequestModel = new mongoose.Schema({
     "status": {
         required: true,
         type: String,
-        enum: RequestStatus
+        enum: Object.values(RequestStatus)
     },
     "createdAt": {
         required: true,
-        type: Date
+        type: Date,
+        default: Date.now
     },
     "updatedAt": {
         required: true,
         type: Date,
+        default: Date.now
     }
+},{
+    timestamps: { createdAt: 'createdAt', updatedAt: 'updatedAt' }
 });
 
 const ExchangeRequest = mongoose.model("ExchangeRequest", ExchangeRequestModel);
